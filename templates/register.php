@@ -41,6 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<div class="container text-center mt-5">
+    <h1>Bienvenue sur la Billetterie de l'Olympique Lyonnais</h1>
+    <div class="mt-4">
+        <a href="./Admin/login.php" class="btn btn-primary btn-lg me-3">Espace Administrateur</a>
+        <a href="./Supporters/login.php" class="btn btn-secondary btn-lg">Espace Supporter</a>
+    </div>
+</div>
 <div class="container mt-5">
     <h2>Inscription</h2>
     <?php if (!empty($error)): ?>
