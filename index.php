@@ -20,9 +20,6 @@ if ($requestUri === '/' || $requestUri === '/register') {
 } elseif ($requestUri === '/Admin/login') {
     include 'templates/Admin/login.php'; // Connexion admin
     exit;
-} elseif ($requestUri === '/logout') {
-    include 'templates/logout.php'; // Déconnexion
-    exit;
 } elseif ($requestUri === '/admin/dashboard') {
     include 'templates/Admin/dashboard.php'; // Dashboard admin
     exit;
