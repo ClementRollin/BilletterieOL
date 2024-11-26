@@ -30,6 +30,13 @@ function getMatches()
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function getAwayTeams()
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->query('SELECT id, name FROM clubs WHERE name != "Olympique Lyonnais"');
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 function getMatchById($id)
 {
     $pdo = getDbConnection();
