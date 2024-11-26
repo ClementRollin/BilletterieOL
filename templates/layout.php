@@ -42,7 +42,7 @@
             </div>
         <?php else: ?>
             <div class="text-end mb-3">
-                <a href="/logout" class="btn btn-danger">Se déconnecter</a>
+                <a href="/" class="btn btn-danger">Se déconnecter</a>
             </div>
         <?php endif; ?>
     </header>
