@@ -36,9 +36,52 @@ function booking_action($matchId) {
         $seats = (int)$_POST['seats'];
 
         try {
+            // Créer la réservation
             createReservation($matchId, $name, $surname, $email, $seats);
-            header('Location: /home');
+
+            // Générer le PDF
+            require_once 'utils/pdf_generator.php';
+            $pricePerSeat = getPrice($matchId);
+            $logos = [
+                'home' => $match['home_logo'],
+                'away' => $match['away_logo']
+            ];
+            $pdfContent = generateTicketPDF($name, $surname, $match['name'], $seats, $logos, $pricePerSeat);
+
+            $pdfDirectory = __DIR__ . '/public/pdf/';
+            if (!is_dir($pdfDirectory)) {
+                mkdir($pdfDirectory, 0755, true);
+            }
+
+            $files = glob($pdfDirectory . '*.pdf');
+            $now = time();
+
+            foreach ($files as $file) {
+                if (is_file($file) && $now - filemtime($file) >= 86400) {
+                    unlink($file);
+                }
+            }
+
+            // Enregistrer le fichier PDF
+            $pdfFileName = 'ticket_' . uniqid('', true) . '.pdf';
+            $pdfFilePath = $pdfDirectory . $pdfFileName;
+
+            if (file_put_contents($pdfFilePath, $pdfContent) === false) {
+                throw new Exception('Impossible d’écrire le fichier PDF.');
+            }
+
+            // URL du fichier pour l'accès public
+            $pdfUrl = '/public/pdf/' . $pdfFileName;
+
+            // Redirection avec toutes les données nécessaires
+            header('Location: /confirmation?name=' . urlencode($name) .
+                '&surname=' . urlencode($surname) .
+                '&match_id=' . $matchId .
+                '&seats=' . $seats .
+                '&email=' . urlencode($email) .
+                '&pdf=' . urlencode($pdfUrl));
             exit;
+
         } catch (Exception $e) {
             $error = $e->getMessage();
         }

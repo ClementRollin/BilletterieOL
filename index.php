@@ -44,11 +44,41 @@ switch ($requestUri) {
         }
         break;
 
+    case '/generate-pdf':
+        if (isSupporter() && isset($_GET['match_id'])) {
+            $matchId = (int)$_GET['match_id'];
+            $name = $_GET['name'];
+            $surname = $_GET['surname'];
+            $seats = (int)$_GET['seats'];
+
+            $match = getMatchById($matchId);
+            if ($match) {
+                $logos = [
+                    'home' => $match['home_logo'],
+                    'away' => $match['away_logo']
+                ];
+                $pricePerSeat = getPrice($matchId);
+
+                require_once 'utils/pdf_generator.php';
+                $pdfContent = generateTicketPDF($name, $surname, $match['name'], $seats, $logos, $pricePerSeat);
+
+                header('Content-Type: application/pdf');
+                echo $pdfContent;
+                exit;
+            }
+        }
+        http_response_code(404);
+        echo "Page non trouvée.";
+        break;
+
+    case '/confirmation':
+        include __DIR__ . '/templates/Supporters/confirmation.php';
+        break;
+
     default:
         if (preg_match('/^\\/booking\\/(\\d+)$/', $requestUri, $matches)) {
-            booking_action((int)$matches[1]); // Réservation d'un match
+            booking_action((int)$matches[1]);
         } else {
-            // Page 404
             http_response_code(404);
             echo "Page non trouvée.";
         }
