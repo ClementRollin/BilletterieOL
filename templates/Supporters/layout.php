@@ -11,7 +11,7 @@
             background-color: #f9f9f9;
         }
         .header {
-            background-color: #ff3030;
+            background-color: #003DA5;
             color: white;
         }
         .headerContent {
@@ -21,7 +21,7 @@
             text-align: center;
         }
         .footer {
-            background-color: #D71920;
+            background-color: #003DA5;
             color: white;
             text-align: center;
             padding: 10px 0;

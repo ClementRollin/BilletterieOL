@@ -1,20 +1,25 @@
 <?php
-require_once 'model.php';
-require_once __DIR__ . '/utils/pdf_generator.php';
-require_once 'auth.php';
-
-
-function home_action()
-{
-    $matches = getMatches();
-    include 'templates/home.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-function booking_action($matchId)
-{
-    if(!isAuthenticated()) {
+require_once 'model.php';
+require_once 'auth.php';
+
+function home_action() {
+    if (!isSupporter()) {
+        header('Location: /Supporters/login');
+        exit;
+    }
+
+    $matches = getMatches();
+    include 'templates/Supporters/home.php';
+}
+
+function booking_action($matchId) {
+    if (!isSupporter()) {
         header('Location: /Supporters/login?redirect=/booking/' . $matchId);
-        exit();
+        exit;
     }
 
     $match = getMatchById($matchId);
@@ -32,32 +37,12 @@ function booking_action($matchId)
 
         try {
             createReservation($matchId, $name, $surname, $email, $seats);
-
-            $logos = [
-                'home' => $match['home_logo'] ?? '',
-                'away' => $match['away_logo'] ?? ''
-            ];
-            $pricePerSeat = $match['price'] ?? 0;
-
-            $pdf = generateTicketPDF($name, $surname, $match['name'], $seats, $logos, $pricePerSeat);
-
-            header('Content-Type: application/pdf');
-            header('Content-Disposition: inline; filename="ticket.pdf"');
-            echo $pdf;
+            header('Location: /home');
             exit;
         } catch (Exception $e) {
             $error = $e->getMessage();
         }
     }
 
-    include 'templates/booking.php';
+    include 'templates/Supporters/booking.php';
 }
-
-function get_logos($home, $away)
-{
-    return [
-        'home' => $home,
-        'away' => $away,
-    ];
-}
-?>

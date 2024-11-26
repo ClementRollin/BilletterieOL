@@ -1,7 +1,12 @@
 <?php
 require_once __DIR__ . '/../../auth.php';
-if (!isAuthenticated() || !isAdmin()) {
-    header('Location: /admin/login');
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: /Admin/login');
     exit;
 }
 

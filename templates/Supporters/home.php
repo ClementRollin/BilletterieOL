@@ -1,4 +1,16 @@
-<?php ob_start(); ?>
+<?php
+ob_start();
+
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isSupporter()) {
+    header('Location: /Supporters/login');
+    exit;
+}
+?>
 <style>
     .logos {
         display: flex;

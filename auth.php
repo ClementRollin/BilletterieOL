@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once 'model.php';
 
 function login($email, $password) {
@@ -9,21 +11,21 @@ function login($email, $password) {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user'] = [
-            'id' => $user['id'],
-            'email' => $user['email'],
-            'role' => $user['role']
-        ];
+        $_SESSION['user_logged_in'] = true;
+        $_SESSION['user_role'] = $user['role'];
         return true;
     }
     return false;
 }
 
 function isAuthenticated() {
-    return isset($_SESSION['user']);
+    return isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
 }
 
 function isAdmin() {
-    return isAuthenticated() && $_SESSION['user']['role'] === 'admin';
+    return isAuthenticated() && isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
 }
-?>
+
+function isSupporter() {
+    return isAuthenticated() && isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'supporter';
+}
