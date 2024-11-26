@@ -1,6 +1,8 @@
 <?php
 require_once 'model.php';
 require_once __DIR__ . '/utils/pdf_generator.php';
+require_once 'auth.php';
+
 
 function home_action()
 {
@@ -10,6 +12,11 @@ function home_action()
 
 function booking_action($matchId)
 {
+    if(!isAuthenticated()) {
+        header('Location: /Supporters/login?redirect=/booking/' . $matchId);
+        exit();
+    }
+
     $match = getMatchById($matchId);
     if (!$match) {
         http_response_code(404);

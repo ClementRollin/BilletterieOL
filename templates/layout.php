@@ -11,8 +11,12 @@
             background-color: #f9f9f9;
         }
         .header {
-            background-color: #003DA5;
+            background-color: #ff3030;
             color: white;
+        }
+        .headerContent {
+            display: flex;
+            justify-content: space-between;
             padding: 20px 0;
             text-align: center;
         }
@@ -28,9 +32,21 @@
     </style>
 </head>
 <body>
-<header class="header">
-    <h1>Olympique Lyonnais - Billetterie</h1>
-</header>
+<div class="container-fluid header">
+    <header class="container headerContent">
+        <h1>Olympique Lyonnais - Billetterie</h1>
+        <?php if (!isAuthenticated()): ?>
+            <div class="text-end mb-3">
+                <a href="/Supporters/login" class="btn btn-primary">Se connecter (Supporter)</a>
+                <a href="/Admin/login" class="btn btn-secondary">Se connecter (Admin)</a>
+            </div>
+        <?php else: ?>
+            <div class="text-end mb-3">
+                <a href="/logout" class="btn btn-danger">Se déconnecter</a>
+            </div>
+        <?php endif; ?>
+    </header>
+</div>
 <main class="container my-4">
     <?= $content ?>
 </main>
