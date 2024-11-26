@@ -48,6 +48,7 @@
                     <h5 class="card-title"><?= htmlspecialchars($match['name']) ?></h5>
                     <p>Date : <?= htmlspecialchars($match['match_date']) ?></p>
                     <p>Places restantes : <?= htmlspecialchars($match['remaining_seats']) ?></p>
+                    <p><strong>Prix :</strong> <?= number_format($match['price'], 2) ?> €</p>
                     <a href="/booking/<?= $match['id'] ?>" class="btn btn-primary">Réserver</a>
                 </div>
             </div>

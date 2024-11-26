@@ -33,7 +33,16 @@ function getMatches()
 function getMatchById($id)
 {
     $pdo = getDbConnection();
-    $stmt = $pdo->prepare('SELECT * FROM matches WHERE id = ?');
+    $stmt = $pdo->prepare('
+        SELECT 
+            matches.*, 
+            home_club.logo_url AS home_logo,
+            away_club.logo_url AS away_logo
+        FROM matches
+        JOIN clubs AS home_club ON matches.home_team_id = home_club.id
+        JOIN clubs AS away_club ON matches.away_team_id = away_club.id
+        WHERE matches.id = ?
+    ');
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
@@ -41,7 +50,7 @@ function getMatchById($id)
 function getMatchWithTeams($matchId)
 {
     $pdo = getDbConnection();
-    $stmt = $pdo->prepare('
+    $stmt = $pdo->query('
         SELECT 
             matches.*, 
             home_club.name AS home_team_name, 
@@ -51,10 +60,9 @@ function getMatchWithTeams($matchId)
         FROM matches
         JOIN clubs AS home_club ON matches.home_team_id = home_club.id
         JOIN clubs AS away_club ON matches.away_team_id = away_club.id
-        WHERE matches.id = ?
+        ORDER BY matches.match_date ASC
     ');
-    $stmt->execute([$matchId]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function createReservation($matchId, $name, $surname, $email, $seats)
@@ -81,6 +89,34 @@ function createReservation($matchId, $name, $surname, $email, $seats)
         $pdo->rollBack();
         throw $e;
     }
+}
+
+function getPrice($matchId)
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare('SELECT price FROM matches WHERE id = ?');
+    $stmt->execute([$matchId]);
+    return $stmt->fetchColumn();
+}
+
+function getReservationWithTotalPrice($reservationId)
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare('
+        SELECT 
+            r.id AS reservation_id,
+            r.customer_name,
+            r.customer_surname,
+            m.name AS match_name,
+            r.seats,
+            m.price,
+            (r.seats * m.price) AS total_price
+        FROM reservations r
+        JOIN matches m ON r.match_id = m.id
+        WHERE r.id = ?
+    ');
+    $stmt->execute([$reservationId]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 function generatePDF($name, $surname, $matchName, $seats)

@@ -3,12 +3,15 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Dompdf\Dompdf;
 
-function generateTicketPDF($name, $surname, $matchName, $seats, $logos)
+function generateTicketPDF($name, $surname, $matchName, $seats, $logos, $pricePerSeat)
 {
     $dompdf = new Dompdf();
 
     // Autoriser les ressources distantes
     $dompdf->set_option('isRemoteEnabled', true);
+
+    // Calcul du prix total
+    $totalPrice = $seats * $pricePerSeat;
 
     $html = "
     <style>
@@ -79,6 +82,8 @@ function generateTicketPDF($name, $surname, $matchName, $seats, $logos)
             <p><strong>Match :</strong> {$matchName}</p>
             <p><strong>Nom :</strong> {$name} {$surname}</p>
             <p><strong>Nombre de places :</strong> {$seats}</p>
+            <p><strong>Prix unitaire :</strong> " . number_format($pricePerSeat, 2) . " €</p>
+            <p><strong>Total :</strong> " . number_format($totalPrice, 2) . " €</p>
         </div>
         <div class='footer'>
             <p>Merci pour votre réservation. Rendez-vous au Groupama Stadium !</p>
@@ -91,3 +96,4 @@ function generateTicketPDF($name, $surname, $matchName, $seats, $logos)
     $dompdf->render();
     return $dompdf->output();
 }
+?>
